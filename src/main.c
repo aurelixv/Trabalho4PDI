@@ -28,7 +28,7 @@ int main() {
 
         //Carregando imagem em escala de cinza.
         original = abreImagem(imagens[i], 1);
-        sprintf(name, "../resultados/%d1 - Cinza.bmp", i);
+        sprintf(name, "../resultados/%d1 - Cinza.bmp", i + 1);
         salvaImagem(original, name); 
 
         //Criando imagens auxiliares, com o mesmo tamanho da imagem carregada.
@@ -38,36 +38,41 @@ int main() {
         buffer = criaImagem(original->largura, original->altura, original->n_canais);
 
         filtroGaussiano(entrada, saida, 5, 5, buffer);
-        sprintf(name, "../resultados/%d2 - borrada.bmp", i);
+        sprintf(name, "../resultados/%d2 - borrada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         normalizaSemExtremos8bpp(entrada, saida, 0, 1, 0.01f);
-        sprintf(name, "../resultados/%d3 - normalizada.bmp", i);
+        sprintf(name, "../resultados/%d3 - normalizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         binarizaAdapt(entrada, saida, 101, 0.2, buffer);
-        sprintf(name, "../resultados/%d4 - binAdapt.bmp", i);
+        sprintf(name, "../resultados/%d4 - binAdapt.bmp", i + 1);
+        salvaImagem(saida, name);
+        copiaConteudo(saida, entrada);
+
+        dilata(entrada, kernel, criaCoordenada(4, 4), saida);
+        sprintf(name, "../resultados/%d5 - dilata.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         mascara(original, entrada, saida);
-        sprintf(name, "../resultados/%d5 - mascara.bmp", i);
+        sprintf(name, "../resultados/%d6 - mascara.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         binariza(entrada, saida, 0.7f);
-        sprintf(name, "../resultados/%d6 - binarizada.bmp", i);
+        sprintf(name, "../resultados/%d7 - binarizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
         
         erode(entrada, kernel, criaCoordenada(4, 4), saida);
-        sprintf(name, "../resultados/%d7 - Erode.bmp", i);
+        sprintf(name, "../resultados/%d8 - Erode.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        printf("Numero de graos: %d\n", rotulaFloodFill(entrada, &componente, 0, 0, 0));
+        printf("Numero de graos na imagem %d: %d\n", i + 1,rotulaFloodFill(entrada, &componente, 2, 2, 5));
         
 
         /* filtroGaussiano(original, saida, 5, 5, NULL);
@@ -86,7 +91,8 @@ int main() {
         salvaImagem(buffer, name); */
 
         //Desalocando memória previamente alocada.
-        destroiImagem(original);
+        destroiImagem(original);        
+        destroiImagem(entrada);        
         destroiImagem(saida);
         destroiImagem(buffer);
     }
