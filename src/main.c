@@ -3,7 +3,7 @@
 
 #include "pdi.h"
 
-#define KERNEL 9
+#define KERNEL 7
 
 //Novas funções
 void mascara(Imagem *original, Imagem *mascara, Imagem *saida);
@@ -85,12 +85,14 @@ int main() {
 
         qsort(componente, qArroz, sizeof(ComponenteConexo), cmpfunc);
 
-        int mediana = componente[qArroz/2].n_pixels;
+        int mediana = componente[(qArroz/2)-1].n_pixels;
 
         for(int cont = 0; cont < qArroz; cont += 1)
             nPixels += componente[cont].n_pixels;
 
-        printf("Numero de arroz: %d\n", nPixels/mediana);
+        printf("Imagem %d\n", i + 1);
+        printf("FloodFill: \t\t%d\n", qArroz);
+        printf("Calculo com mediana: \t%d\n\n", nPixels/mediana);        
 
         //Desalocando memória previamente alocada.
         destroiImagem(original);
