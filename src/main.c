@@ -3,10 +3,11 @@
 
 #include "pdi.h"
 
-#define THRESHOLD 0.6f
+#define KERNEL 9
 
 //Novas funções
 void mascara(Imagem *original, Imagem *mascara, Imagem *saida);
+int cmpfunc(const void * a, const void * b);
 
 int main() {
 
@@ -20,7 +21,7 @@ int main() {
                        };
     char name[40] = "";
     Imagem *original, *entrada, *saida, *buffer;
-    Imagem *kernel = criaKernelCircular(7);
+    Imagem *kernel = criaKernelCircular(KERNEL);
     ComponenteConexo *componente;
 
     //Procedimento para cada imagens.
@@ -52,7 +53,7 @@ int main() {
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        dilata(entrada, kernel, criaCoordenada(4, 4), saida);
+        dilata(entrada, kernel, criaCoordenada((KERNEL/2), (KERNEL/2)), saida);
         sprintf(name, "../resultados/%d5 - dilata.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
@@ -66,17 +67,34 @@ int main() {
         sprintf(name, "../resultados/%d7 - binarizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
-        
-        erode(entrada, kernel, criaCoordenada(4, 4), saida);
-        sprintf(name, "../resultados/%d8 - Erode.bmp", i + 1);
+
+        Imagem *k       = criaKernelCircular(5);
+        Coordenada c    = criaCoordenada(2, 2);
+
+        erode(entrada, k, c, saida);
+        copiaConteudo(saida, entrada);
+        dilata(entrada, k, c, saida);
+        copiaConteudo(saida, entrada);
+        erode(entrada, k, c, saida);
+        sprintf(name, "../resultados/%d8 - tapaBuraco.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        printf("Numero de graos na imagem %d: %d\n", i + 1,rotulaFloodFill(entrada, &componente, 2, 2, 5));
+        int qArroz = rotulaFloodFill(entrada, &componente, 2, 2, 5);
+        int nPixels = 0;
+
+        qsort(componente, qArroz, sizeof(ComponenteConexo), cmpfunc);
+
+        int mediana = componente[qArroz/2].n_pixels;
+
+        for(int cont = 0; cont < qArroz; cont += 1)
+            nPixels += componente[cont].n_pixels;
+
+        printf("Numero de arroz: %d\n", nPixels/mediana);
 
         //Desalocando memória previamente alocada.
-        destroiImagem(original);        
-        destroiImagem(entrada);        
+        destroiImagem(original);
+        destroiImagem(entrada);
         destroiImagem(saida);
         destroiImagem(buffer);
     }
@@ -86,7 +104,6 @@ int main() {
 
 //Função para subtrair a imagem original da mascara, colocando o resultado na saida.
 void mascara(Imagem *original, Imagem *mascara, Imagem *saida) {
-
     for(int y = 0; y < original->altura; y += 1) {
         for(int x = 0; x < original->largura; x += 1) {
             if(mascara->dados[0][y][x] == 1.0f)
@@ -95,5 +112,8 @@ void mascara(Imagem *original, Imagem *mascara, Imagem *saida) {
                 saida->dados[0][y][x] = 0.0f;
         }
     }
+}
 
+int cmpfunc(const void * a, const void * b) {
+	return (*(ComponenteConexo*)a).n_pixels - (*(ComponenteConexo*)b).n_pixels;
 }
