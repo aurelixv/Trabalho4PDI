@@ -73,22 +73,6 @@ int main() {
         copiaConteudo(saida, entrada);
 
         printf("Numero de graos na imagem %d: %d\n", i + 1,rotulaFloodFill(entrada, &componente, 2, 2, 5));
-        
-
-        /* filtroGaussiano(original, saida, 5, 5, NULL);
-        sprintf(name, "../resultados/%d2 - Borrada.bmp", i);
-        salvaImagem(saida, name);
-
-        
-        Imagem *kernel = criaKernelCircular(11);
-        salvaImagem(kernel, "kernel.bmp");
-        erode(img, kernel, criaCoordenada(6, 6), buffer);
-        sprintf(name, "../resultados/%d3 - Erode.bmp", i);
-        salvaImagem(buffer, name);
-
-        binariza(buffer, buffer, THRESHOLD);
-        sprintf(name, "../resultados/%d4 - Binarizada.bmp", i);
-        salvaImagem(buffer, name); */
 
         //Desalocando memória previamente alocada.
         destroiImagem(original);        
