@@ -19,7 +19,7 @@ int main() {
                         "../imagens/150.bmp", 
                         "../imagens/205.bmp" 
                        };
-    char name[40] = "";
+    char name[40] = "";    
     Imagem *original, *entrada, *saida, *buffer;
     Imagem *kernel = criaKernelCircular(KERNEL);
     ComponenteConexo *componente;
@@ -63,8 +63,13 @@ int main() {
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        binariza(entrada, saida, 0.7f);
-        sprintf(name, "../resultados/%d7 - binarizada.bmp", i + 1);
+        normalizaSemExtremos8bpp(entrada, saida, 0, 1, 0.01f);
+        sprintf(name, "../resultados/%d7 - normalizada.bmp", i + 1);
+        salvaImagem(saida, name);
+        copiaConteudo(saida, entrada);
+
+        binariza(entrada, saida, 0.8f);
+        sprintf(name, "../resultados/%d8 - binarizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
@@ -76,11 +81,11 @@ int main() {
         dilata(entrada, k, c, saida);
         copiaConteudo(saida, entrada);
         erode(entrada, k, c, saida);
-        sprintf(name, "../resultados/%d8 - tapaBuraco.bmp", i + 1);
+        sprintf(name, "../resultados/%d9 - tapaBuraco.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        int qArroz = rotulaFloodFill(entrada, &componente, 2, 2, 5);
+        int qArroz = rotulaFloodFill(entrada, &componente, 1, 1, 1);
         int nPixels = 0;
 
         qsort(componente, qArroz, sizeof(ComponenteConexo), cmpfunc);
@@ -92,7 +97,7 @@ int main() {
 
         printf("Imagem %d\n", i + 1);
         printf("FloodFill: \t\t%d\n", qArroz);
-        printf("Calculo com mediana: \t%d\n\n", nPixels/mediana);        
+        printf("Calculo com mediana: \t%d\n\n", nPixels/mediana);
 
         //Desalocando memória previamente alocada.
         destroiImagem(original);
