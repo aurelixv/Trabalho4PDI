@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <math.h>
 #include "pdi.h"
 
-#define KERNEL 7
+#define KERNEL 3
 
 //Novas funções
 void mascara(Imagem *original, Imagem *mascara, Imagem *saida);
@@ -22,6 +23,9 @@ int main() {
     char name[40] = "";
     Imagem *original, *entrada, *saida, *buffer;
     Imagem *kernel = criaKernelCircular(KERNEL);
+    Coordenada coordenada = criaCoordenada(KERNEL/2, KERNEL/2);
+    Imagem *k = criaKernelCircular(5);
+    Coordenada c = criaCoordenada(2, 2);
     ComponenteConexo *componente;
 
     //Procedimento para cada imagens.
@@ -33,10 +37,13 @@ int main() {
         salvaImagem(original, name); 
 
         //Criando imagens auxiliares, com o mesmo tamanho da imagem carregada.
-        entrada = criaImagem(original->largura, original->altura, original->n_canais);
+        entrada = criaImagem(original->largura,
+                    original->altura, original->n_canais);
         copiaConteudo(original, entrada);
-        saida = criaImagem(original->largura, original->altura, original->n_canais);
-        buffer = criaImagem(original->largura, original->altura, original->n_canais);
+        saida = criaImagem(original->largura,
+                    original->altura, original->n_canais);
+        buffer = criaImagem(original->largura,
+                    original->altura, original->n_canais);
 
         filtroGaussiano(entrada, saida, 5, 5, buffer);
         sprintf(name, "../resultados/%d2 - borrada.bmp", i + 1);
@@ -53,7 +60,7 @@ int main() {
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        dilata(entrada, kernel, criaCoordenada((KERNEL/2), (KERNEL/2)), saida);
+        dilata(entrada, kernel, coordenada, saida);
         sprintf(name, "../resultados/%d5 - dilata.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
@@ -64,24 +71,19 @@ int main() {
         copiaConteudo(saida, entrada);
 
         normalizaSemExtremos8bpp(entrada, saida, 0, 1, 0.01f);
-        sprintf(name, "../resultados/%d7 - normalizada.bmp", i + 1);
+        sprintf(name, "../resultados/%d3 - normalizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         binariza(entrada, saida, 0.8f);
-        sprintf(name, "../resultados/%d8 - binarizada.bmp", i + 1);
+        sprintf(name, "../resultados/%d7 - binarizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        Imagem *k       = criaKernelCircular(5);
-        Coordenada c    = criaCoordenada(2, 2);
-
-        erode(entrada, k, c, saida);
-        copiaConteudo(saida, entrada);
-        dilata(entrada, k, c, saida);
+        abertura(entrada, k, c, saida, buffer);
         copiaConteudo(saida, entrada);
         erode(entrada, k, c, saida);
-        sprintf(name, "../resultados/%d9 - tapaBuraco.bmp", i + 1);
+        sprintf(name, "../resultados/%d8 - tapaBuraco.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
@@ -90,18 +92,36 @@ int main() {
 
         qsort(componente, qArroz, sizeof(ComponenteConexo), cmpfunc);
 
-        int mediana = componente[(qArroz - 1)/2].n_pixels;
+        int mediana;
+        if((qArroz - 1)%2 == 0)
+            mediana = (componente[(qArroz-1)/2].n_pixels
+                        + componente[(qArroz)/2].n_pixels)/2;
+        else
+            mediana = componente[(qArroz-1)/2].n_pixels;
 
         for(int cont = 0; cont < qArroz; cont += 1)
             nPixels += componente[cont].n_pixels;
 
+        // desviopadrao = raiz(somatorio, i de 0 ate n-1 ((comp(i) - media)²)/n)    
+        int desvpad = 0;
+
+        // Desvio padrao representa o número total de pixels que nao foram 
+        // contados por conta da juncao dos arroz
+        for(int j = 0; j < qArroz; j += 1)
+        // A mediana representa o grau de experança, também pode usar média
+            desvpad += abs(componente[j].n_pixels - mediana);
+        desvpad /= sqrt(qArroz);
+
         printf("Imagem %d\n", i + 1);
-        /* printf("FloodFill: \t\t%d\n", qArroz);
-        printf("Calculo com mediana: \t%d\n", nPixels/mediana); */
-        if(componente[qArroz - 1].n_pixels/mediana > 4)
-            printf("Graos de arroz na imagem: \t%d\n\n", nPixels/mediana);
+        if((componente[qArroz - 1].n_pixels)/mediana > 4)
+        // Calcula porcentagem de erro e soma com o número de pixels total
+            printf("Graos de arroz na imagem: \t%d\n\n",
+                    (nPixels + (desvpad*100/nPixels))/mediana);
         else
             printf("Graos de arroz na imagem: \t%d\n\n", qArroz);
+        //printf("Numero de arroz c/ desvpad: %d\n", (nPixels + desvpad)/mediana);
+        //printf("Numero de arroz c/ mediana: %d\n", nPixels/mediana);
+        //printf("Numero de arroz s/ mediana: %d\n\n", qArroz);
         //Desalocando memória previamente alocada.
         free(componente);
         destroiImagem(original);
@@ -126,5 +146,5 @@ void mascara(Imagem *original, Imagem *mascara, Imagem *saida) {
 }
 
 int cmpfunc(const void * a, const void * b) {
-    return (*(ComponenteConexo*)a).n_pixels - (*(ComponenteConexo*)b).n_pixels;
+	return (*(ComponenteConexo*)a).n_pixels - (*(ComponenteConexo*)b).n_pixels;
 }
