@@ -103,6 +103,7 @@ int main() {
         else
             printf("Graos de arroz na imagem: \t%d\n\n", qArroz);
         //Desalocando memória previamente alocada.
+        free(componente);
         destroiImagem(original);
         destroiImagem(entrada);
         destroiImagem(saida);
