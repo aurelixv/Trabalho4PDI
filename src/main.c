@@ -33,7 +33,7 @@ int main() {
 
         //Carregando imagem em escala de cinza.
         original = abreImagem(imagens[i], 1);
-        sprintf(name, "../resultados/%d1 - Cinza.bmp", i + 1);
+        sprintf(name, "../resultados/%d1 - cinza.bmp", i + 1);
         salvaImagem(original, name); 
 
         //Criando imagens auxiliares, com o mesmo tamanho da imagem carregada.
@@ -71,19 +71,19 @@ int main() {
         copiaConteudo(saida, entrada);
 
         normalizaSemExtremos8bpp(entrada, saida, 0, 1, 0.01f);
-        sprintf(name, "../resultados/%d3 - normalizada.bmp", i + 1);
+        sprintf(name, "../resultados/%d7 - normalizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         binariza(entrada, saida, 0.8f);
-        sprintf(name, "../resultados/%d7 - binarizada.bmp", i + 1);
+        sprintf(name, "../resultados/%d8 - binarizada.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
         abertura(entrada, k, c, saida, buffer);
         copiaConteudo(saida, entrada);
         erode(entrada, k, c, saida);
-        sprintf(name, "../resultados/%d8 - tapaBuraco.bmp", i + 1);
+        sprintf(name, "../resultados/%d9 - tapaBuraco.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
