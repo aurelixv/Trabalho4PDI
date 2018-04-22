@@ -19,7 +19,7 @@ int main() {
                         "../imagens/150.bmp", 
                         "../imagens/205.bmp" 
                        };
-    char name[40] = "";    
+    char name[40] = "";
     Imagem *original, *entrada, *saida, *buffer;
     Imagem *kernel = criaKernelCircular(KERNEL);
     ComponenteConexo *componente;
@@ -90,15 +90,18 @@ int main() {
 
         qsort(componente, qArroz, sizeof(ComponenteConexo), cmpfunc);
 
-        int mediana = componente[(qArroz/2)-1].n_pixels;
+        int mediana = componente[(qArroz - 1)/2].n_pixels;
 
         for(int cont = 0; cont < qArroz; cont += 1)
             nPixels += componente[cont].n_pixels;
 
         printf("Imagem %d\n", i + 1);
-        printf("FloodFill: \t\t%d\n", qArroz);
-        printf("Calculo com mediana: \t%d\n\n", nPixels/mediana);
-
+        /* printf("FloodFill: \t\t%d\n", qArroz);
+        printf("Calculo com mediana: \t%d\n", nPixels/mediana); */
+        if(componente[qArroz - 1].n_pixels/mediana > 4)
+            printf("Graos de arroz na imagem: \t%d\n\n", nPixels/mediana);
+        else
+            printf("Graos de arroz na imagem: \t%d\n\n", qArroz);
         //Desalocando memória previamente alocada.
         destroiImagem(original);
         destroiImagem(entrada);
@@ -122,5 +125,5 @@ void mascara(Imagem *original, Imagem *mascara, Imagem *saida) {
 }
 
 int cmpfunc(const void * a, const void * b) {
-	return (*(ComponenteConexo*)a).n_pixels - (*(ComponenteConexo*)b).n_pixels;
+    return (*(ComponenteConexo*)a).n_pixels - (*(ComponenteConexo*)b).n_pixels;
 }
