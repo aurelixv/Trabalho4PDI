@@ -48,7 +48,7 @@ int main() {
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
-        binarizaAdapt(entrada, saida, 101, 0.2, buffer);
+        binarizaAdapt(entrada, saida, 101, 0.15f, buffer);
         sprintf(name, "../resultados/%d4 - binAdapt.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
@@ -95,9 +95,9 @@ int main() {
         for(int cont = 0; cont < qArroz; cont += 1)
             nPixels += componente[cont].n_pixels;
 
-        printf("Imagem %d\n", i + 1);
-        /* printf("FloodFill: \t\t%d\n", qArroz);
-        printf("Calculo com mediana: \t%d\n", nPixels/mediana); */
+        /* printf("Imagem %d\n", i + 1);
+        printf("FloodFill: \t\t%d\n", qArroz); */
+        printf("Calculo com mediana: \t%d\n", nPixels/mediana);
         if(componente[qArroz - 1].n_pixels/mediana > 4)
             printf("Graos de arroz na imagem: \t%d\n\n", nPixels/mediana);
         else
