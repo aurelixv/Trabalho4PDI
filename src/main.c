@@ -83,7 +83,7 @@ int main() {
         abertura(entrada, k, c, saida, buffer);
         copiaConteudo(saida, entrada);
         erode(entrada, k, c, saida);
-        sprintf(name, "../resultados/%d9 - tapaBuraco.bmp", i + 1);
+        sprintf(name, "../resultados/%d9 - abertura.bmp", i + 1);
         salvaImagem(saida, name);
         copiaConteudo(saida, entrada);
 
@@ -123,6 +123,7 @@ int main() {
         //printf("Numero de arroz c/ mediana: %d\n", nPixels/mediana);
         //printf("Numero de arroz s/ mediana: %d\n\n", qArroz);
         //Desalocando memória previamente alocada.
+
         free(componente);
         destroiImagem(original);
         destroiImagem(entrada);
